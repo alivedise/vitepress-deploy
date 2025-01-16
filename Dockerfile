@@ -5,11 +5,20 @@ LABEL "com.github.actions.description"="A GitHub Action to build and deploy Vuep
 LABEL "com.github.actions.icon"="upload-cloud"
 LABEL "com.github.actions.color"="gray-dark"
 
-LABEL "repository"="https://github.com/jenkey2011/vuepress-deploy"
-LABEL "homepage"="https://github.com/jenkey2011/vuepress-deploy"
-LABEL "maintainer"="Jenkey2011 <jenkey2011@163.com>"
+LABEL "repository"="https://github.com/alivedise/vitepress-deploy"
+LABEL "homepage"="https://github.com/alivedise/vitepress-deploy"
+LABEL "maintainer"="alivedise <alegnadise@gmail.com>"
 
-RUN apt-get update && apt-get install -y git jq
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    jq \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
