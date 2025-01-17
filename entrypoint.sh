@@ -80,6 +80,10 @@ echo "==> Adding and committing changes"
 git add .
 git commit -m "$COMMIT_MESSAGE"
 
+# Resolve non-fast-forward push issues
+echo "==> Pulling latest changes to avoid non-fast-forward push"
+git pull --rebase origin $DEPLOY_BRAN || echo "Rebase completed or no changes"
+
 echo "==> Pushing to repository"
 git push origin $DEPLOY_BRAN
 
