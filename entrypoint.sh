@@ -20,7 +20,7 @@ cd $BUILD_DIR
 # workaround for 'fatal: unsafe repository' error
 git config --global --add safe.directory "*"
 
-# Get repository
+# Get respository
 if [[ -z "$TARGET_REPO" ]]; then
   REPOSITORY_NAME="${GITHUB_REPOSITORY}"
 else
@@ -58,34 +58,17 @@ if [ "$CNAME" ]; then
   echo $CNAME > CNAME
 fi
 
-# Fetch the target branch history
-echo "==> Fetching existing branch history"
-git remote add origin $DEPLOY_REPO
-git fetch origin $DEPLOY_BRAN || echo "Branch does not exist, creating a new one"
-git checkout -B $DEPLOY_BRAN || git checkout -B $DEPLOY_BRAN
+echo "==> Starting deploying"
 
-# Merge existing history without overwriting build results
-echo "==> Merging existing branch history"
-git fetch origin $DEPLOY_BRAN
-if git rev-parse origin/$DEPLOY_BRAN >/dev/null 2>&1; then
-  git merge --no-commit --strategy=ours origin/$DEPLOY_BRAN || echo "No conflicts with existing history"
-fi
-
-# Commit and push changes
+# Final repository
 if [[ -z "$COMMIT_MESSAGE" ]]; then
   COMMIT_MESSAGE="Auto deploy from Github Actions"
 fi
 
-echo "==> Adding and committing changes"
 git add .
 git commit -m "$COMMIT_MESSAGE"
-
-# Resolve non-fast-forward push issues
-echo "==> Pulling latest changes to avoid non-fast-forward push"
-git pull --rebase origin $DEPLOY_BRAN || echo "Rebase completed or no changes"
-
-echo "==> Pushing to repository"
-git push origin $DEPLOY_BRAN
+git push --force $DEPLOY_REPO master:$DEPLOY_BRAN
+rm -fr .git
 
 cd $GITHUB_WORKSPACE
 
